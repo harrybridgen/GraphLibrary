@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-public class LinkedList<T> {
+﻿public class LinkedList<T> {
     public Node? Head { get; private set; }
     public Node? Tail { get; private set; }
     public int Count { get; private set; }
