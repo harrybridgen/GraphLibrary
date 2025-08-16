@@ -33,14 +33,16 @@
                 fromVertex.Edges.Clear();
                 continue;
             }
-
-            for (var edge = NodeData.Edges.Head; edge != null; edge = edge.Next) {
+            var edge = NodeData.Edges.Head;
+            while (edge != null) {
+                var next = edge.Next;
                 if (edge.Data == null) {
                     continue;
                 }
                 if (edge.Data.To.Equals(fromVertex)) {
                     NodeData.Edges.RemoveNode(edge.Data);
                 }
+                edge = next;
             }
         }
 
@@ -57,14 +59,14 @@
             return;
         }
 
-        LinkedList<Edge> fromEdges = fromVertex.Edges;
-        LinkedList<Edge>.Node? current = fromVertex.Edges.Head;
+        var fromEdges = fromVertex.Edges;
+        var current = fromVertex.Edges.Head;
 
         while (current != null) {
+            var next = current.Next;
             if (current.Data == null) {
                 continue;
             }
-            var next = current.Next;
             if (current.Data.To.Id == to) {
                 fromEdges.RemoveNode(current.Data);
                 break;
