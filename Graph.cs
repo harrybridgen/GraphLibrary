@@ -20,6 +20,7 @@
     public void RemoveVertex(int vertexID) {
         Vertex? fromVertex = FindVertex(vertexID);
         if (fromVertex == null) {
+            Console.WriteLine("[RemoveVertex] Could not remove vertex" + vertexID + ", not found");
             return;
         }
 
@@ -33,6 +34,7 @@
                 fromVertex.Edges.Clear();
                 continue;
             }
+
             var edge = NodeData.Edges.Head;
             while (edge != null) {
                 var next = edge.Next;
@@ -47,34 +49,29 @@
         }
 
         Vertices.RemoveNode(fromVertex);
+        Console.WriteLine("[RemoveVertex] Removed node " + vertexID);
     }
 
     public void RemoveEdge(int from, int to) {
         Vertex? fromVertex = FindVertex(from);
         if (fromVertex == null) {
+            Console.WriteLine("[RemoveEdge] Could not remove edge, vertex " + from + " could not be found");
             return;
         }
         Vertex? toVertex = FindVertex(to);
         if (toVertex == null) {
+            Console.WriteLine("[RemoveEdge] Could not remove edge, vertex " + to + " could not be found");
             return;
         }
-
         var fromEdges = fromVertex.Edges;
-        var current = fromVertex.Edges.Head;
-
-        while (current != null) {
-            var next = current.Next;
-            if (current.Data == null) {
-                continue;
-            }
-            if (current.Data.To.Id == to) {
-                fromEdges.RemoveNode(current.Data);
-                break;
-            }
-            current = next;
+        Edge? edge = FindEdge(from, to);
+        if (edge == null) {
+            Console.WriteLine("[RemoveEdge] Could not remove edge, edge from " + from + " to " + to + " could not be found");
+            return;
         }
-
+        fromEdges.RemoveNode(edge);
     }
+
     public Vertex AddVertex(int id) {
         Vertex? vertex = FindVertex(id);
         if (vertex != null) {
@@ -83,13 +80,23 @@
 
         vertex = new Vertex(id);
         Vertices.Append(vertex);
+        Console.WriteLine("[AddVertex] Created new vertex " + id);
         return vertex;
     }
 
-    public void AddEdge(int from, int to, int weight) {
+    public Edge AddEdge(int from, int to, int weight) {
         Vertex fromVertex = AddVertex(from);
         Vertex toVertex = AddVertex(to);
-        fromVertex.Edges.Append(new Edge(fromVertex, toVertex, weight));
+        Edge? edge = FindEdge(from, to);
+        if (edge != null) {
+            Console.WriteLine("[AddEdge] Could not make a new edge, it already exists from " + from + " to " + to);
+            return edge;
+        }
+        edge = new Edge(fromVertex, toVertex, weight);
+        fromVertex.Edges.Append(edge);
+        Console.WriteLine("[AddEdge] Created new edge from " + from + " to " + to + " with weight " + weight);
+        return edge;
+        
     }
 
     public Vertex? FindVertex(int id) {
@@ -113,8 +120,30 @@
         return null;
     }
 
+    public Edge? FindEdge(int from, int to) {
+        Vertex? fromVertex = FindVertex(from);
+        Vertex? toVertex = FindVertex(to);
+        if (fromVertex == null || toVertex == null) {
+            return null;
+        }
+        var fromEdges = fromVertex.Edges;
+        var current = fromVertex.Edges.Head;
+
+        while (current != null) {
+            var next = current.Next;
+            if (current.Data == null) {
+                continue;
+            }
+            if (current.Data.To.Id == to && fromVertex.Id == from) { 
+                return current.Data;
+            }
+            current = next;
+        }
+        return null;
+    }
+
     public void Print() {
-        Console.WriteLine("\nGraph");
+        Console.WriteLine("Graph");
         var current = Vertices.Head;
         while (current != null) {
             var v = current.Data!;
@@ -130,6 +159,7 @@
             Console.WriteLine(); 
             current = current.Next;
         }
+        Console.WriteLine("------------------------------------------");
     }
 
 }
