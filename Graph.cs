@@ -134,7 +134,7 @@
             if (current.Data == null) {
                 continue;
             }
-            if (current.Data.To.Id == to && fromVertex.Id == from) { 
+            if (current.Data.To.Id == to) { 
                 return current.Data;
             }
             current = next;
